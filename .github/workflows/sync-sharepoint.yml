@@ -1,0 +1,30 @@
+name: Sincronizar SharePoint com Supabase
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Corre automaticamente a cada 6 horas
+  workflow_dispatch: # Permite executar manualmente a partir do painel do GitHub
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar ambiente Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências necessárias
+        run: |
+          pip install pandas openpyxl requests
+
+      - name: Executar script de sincronização
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SHAREPOINT_URL: ${{ secrets.SHAREPOINT_URL }}
+        run: |
+          python sync_to_supabase.py
